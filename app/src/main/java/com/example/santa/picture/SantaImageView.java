@@ -340,9 +340,9 @@ public class SantaImageView extends ImageView {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.d(DEBUG, "onDoubleTap");
-            Log.d(DEBUG, "getMatrixScale(mLastMatrix) = "+getMatrixScale(mLastMatrix));
-            Log.d(DEBUG, "getMaxScale() = "+getMaxScale());
+//            Log.d(DEBUG, "onDoubleTap");
+//            Log.d(DEBUG, "getMatrixScale(mLastMatrix) = "+getMatrixScale(mLastMatrix));
+//            Log.d(DEBUG, "getMaxScale() = "+getMaxScale());
 
             if(getMatrixScale(mLastMatrix)< getMaxScale()) {
                 float scale = getMaxScale() / getMatrixScale(mLastMatrix);
@@ -357,9 +357,12 @@ public class SantaImageView extends ImageView {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//            Log.d(DEBUG, "onFling");
+            Log.d(DEBUG, "onFling");
 //            Log.d(DEBUG, "e1 = "+e1.getX());
 //            Log.d(DEBUG, "e2 = "+e2.getX());
+            if(!mScoller.isFinished()) {
+                mScoller.forceFinished(true);
+            }
             fling(velocityX, velocityY);
             return super.onFling(e1, e2, velocityX, velocityY);
         }
@@ -377,7 +380,6 @@ public class SantaImageView extends ImageView {
             setImageMatrix(mLastMatrix);
 
         }
-//        Log.d(DEBUG, "scroll finish");
         super.computeScroll();
     }
 
@@ -385,22 +387,19 @@ public class SantaImageView extends ImageView {
     private void fling(float velocityX, float velocityY) {
         if(mState == STATE_IDEL)
             return;
-        mScoller.forceFinished(true);
 
         boolean isNeedFling = isBeyondWidth();
         int startX = (int) getMatrixTranslationX(mLastMatrix);
         int maxX = isNeedFling ? 0: startX;
         int minX = isNeedFling ? -(getScaledWidth(mLastMatrix) - getWidth()) : startX;
-//        Log.d(DEBUG, "fling startX = "+startX);
-//        Log.d(DEBUG, "fling maxX = "+maxX);
-//        Log.d(DEBUG, "fling minX = "+minX);
+
 
         isNeedFling = isBeyondHeight();
         int startY = (int) getMatrixTranslationY(mLastMatrix);
         int maxY = isNeedFling ?  0 : startY;
         int minY = isNeedFling ? - (getScaledHeight(mLastMatrix) - getHeight()): startY;
         mScoller.fling(startX, startY, (int)velocityX,  (int)velocityY, minX, maxX, minY, maxY);
-
+        invalidate();
     }
 
 
